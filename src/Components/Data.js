@@ -52,6 +52,7 @@ const MenuItems = [
       name: "Burger Bistro",
       ratings: 5,
       price: "7.5",
+      qty:1
     },
     {
       id: 2,

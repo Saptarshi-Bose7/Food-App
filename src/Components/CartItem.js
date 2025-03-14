@@ -12,11 +12,11 @@ function CartItem(props) {
             <div className='itemQuantity'>
                 <span>x {props.qty}</span>
                 <div className='quantity'>
-                    <RemoveRounded className='itemRemove' onClick={() => props.handleRemoveFromCard(props.item.id,props.price)}/>
+                    <RemoveRounded className='itemRemove' onClick={() => props.handleRemoveFromCard(props.item,props.price)}/>
 
                     <AddRounded className='itemAdd' onClick={() => props.handleAddToCart(props.item,props.price)}/>
 
-                    <Delete className='itemDelete' onClick={() => props.handleDeleteFromCard(props.item.id)}/>
+                    <Delete className='itemDelete' onClick={() => props.handleDeleteFromCard(props.item)}/>
                 </div>
             </div>
         </div>

@@ -11,9 +11,10 @@ import {MenuItems,Items} from './Components/Data'
 import ItemCard from './Components/ItemCard';
 import DebitCard from './Components/DebitCard';
 import CartItem from './Components/CartItem';
+import { connect } from "react-redux"
 
 
-function App() {
+function App(props) {
   
   const [query,setQuery] = useState("")
   const [isMainData,setMainData] = useState(Items.filter(item => item.itemId==="buger01"))
@@ -42,59 +43,17 @@ function App() {
   {
      setMainData(Items.filter(item => item.itemId===itemId))
   }
- const [cart, setCart] = useState([])
-
-
-
-  const handleAddToCart = (product,price1) =>
-  {
-     setCart(() => {
-       const findProductInCart = cart.find(item => item.id===product.id)
-
-       if(findProductInCart)
-       {
-           return cart.map(item => 
-              item.id===product.id?{...item,qty:item.qty+1}:item
-           )
-       }
-       return [...cart, {...product}]
-     })
-  }
-  
-  const handleRemoveFromCard = (id,price1) =>
-  {
-      setCart(() => {
-        return cart.reduce((cal, item) => {
-          if(item.id===id)
-          {
-              if(item.qty===1)
-              {
-                 return cal
-              }
-
-              return [...cal, {...item,qty:item.qty-1}]
-
-          }
-          return [...cal,{...item}]
-        }, [])
-      })
-  }
-
-  const handleDeleteFromCard = id =>
-  {
-     setCart(cart.filter(product => product.id!==id))
-  }
-
+ 
   const total = arr =>
   {
      return arr.reduce((cal,items) => {
-      return cal + parseInt(items.price) * items.qty
+      return cal + parseInt(items.price * items.qty)
      },0)
   } 
 
   return (
     <div className="App">
-       <Header cart={cart} input={setQuery}/>
+       <Header cart={props.cart} input={setQuery}/>
        <main>
             <div className='mainContainer'>
               <div className='banner'>
@@ -128,7 +87,7 @@ function App() {
 
                   }).map((item,index) => {
                     return (
-                      <ItemCard item={item} key={index} id={item.id} imgSrc={item.imgSrc} itemId={item.id} name={item.name} ratings={item.ratings} price={item.price} handleAddToCart={handleAddToCart}/>
+                      <ItemCard item={item} key={index} id={item.id} imgSrc={item.imgSrc} itemId={item.id} name={item.name} ratings={item.ratings} price={item.price} handleAddToCart={props.addToCart}/>
                     )
                   }) 
                  
@@ -147,10 +106,10 @@ function App() {
                   <SubMenuContainer name="Cart Items" />
                   <div className='cartContainer'>
                     <div className='cartItems'>
-                      {cart.map((item,index) => {
+                      {props.cart.map((item,index) => {
                         return (
                           <div key={index}>
-                            <CartItem item={item} name={item.name} imgSrc={item.imgSrc} qty={item.qty} price={item.price} handleAddToCart={handleAddToCart} handleRemoveFromCard={handleRemoveFromCard} handleDeleteFromCard={handleDeleteFromCard}/>
+                            <CartItem item={item} name={item.name} imgSrc={item.imgSrc} qty={item.qty} price={item.price} handleAddToCart={props.addToCart} handleRemoveFromCard={props.removeFromCart} handleDeleteFromCard={props.deleteFromCart}/>
                           </div>
                         )
                       })
@@ -161,7 +120,7 @@ function App() {
               </div>
               <div className='totalSection'>
                     <h3>Total</h3>
-                    <p><span>$ {total(cart)}</span></p>
+                    <p><span>$ {total(props.cart)}</span></p>
         </div>
         <button className='checkOut'>Check Out</button>
               </div>
@@ -183,4 +142,18 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    cart:state.cart
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addToCart: (item,price) => dispatch({type:"ADD",payload:item}),
+    removeFromCart: (item,price) => dispatch({type:"REMOVE",payload:item}),
+    deleteFromCart: (item) => dispatch({type:"DELETE",payload:item})
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(App);
